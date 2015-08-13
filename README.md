@@ -196,6 +196,7 @@ Billy.configure do |c|
   c.cache_path = 'spec/req_cache/'
   c.proxy_host = 'example.com' # defaults to localhost
   c.proxy_port = 12345 # defaults to random
+  c.key_pattern = [:scope, :method, :host] # defaults to [:method, :host]
 end
 ```
 

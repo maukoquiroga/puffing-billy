@@ -4,13 +4,14 @@ require 'tmpdir'
 module Billy
   class Config
     DEFAULT_WHITELIST = ['127.0.0.1', 'localhost']
+    DEFAULT_KEY_PATTERN = [:method, :host, :scope]
     RANDOM_AVAILABLE_PORT = 0 # https://github.com/eventmachine/eventmachine/wiki/FAQ#wiki-can-i-start-a-server-on-a-random-available-port
 
     attr_accessor :logger, :cache, :cache_request_headers, :whitelist, :path_blacklist, :ignore_params,
                   :persist_cache, :ignore_cache_port, :non_successful_cache_disabled, :non_successful_error_level,
                   :non_whitelisted_requests_disabled, :cache_path, :proxy_host, :proxy_port, :proxied_request_inactivity_timeout,
                   :proxied_request_connect_timeout, :dynamic_jsonp, :dynamic_jsonp_keys, :merge_cached_responses_whitelist,
-                  :strip_query_params
+                  :strip_query_params, :key_pattern
 
     def initialize
       @logger = defined?(Rails) ? Rails.logger : Logger.new(STDOUT)
@@ -37,6 +38,7 @@ module Billy
       @proxied_request_inactivity_timeout = 10 # defaults from https://github.com/igrigorik/em-http-request/wiki/Redirects-and-Timeouts
       @proxied_request_connect_timeout = 5
       @strip_query_params = true
+      @key_pattern = DEFAULT_KEY_PATTERN
     end
   end
 
