@@ -78,12 +78,40 @@ describe Billy::Cache do
       end
 
       it 'More specifically, the cache keys should be identical for the 2 analytics urls' do
-        identical_cache_key = 'post_5fcb7a450e4cd54dcffcb526212757ee0ca9dc17'
+        identical_cache_key = 'post_www.example-analytics.com_5fcb7a450e4cd54dcffcb526212757ee0ca9dc17'
         distinct_cache_key = 'post_www.example-analytics.com_81f097654a523bd7ddb10fd4aee781723e076a1a_02083f4579e08a612425c0c1a17ee47add783b94'
 
         expect(cache.key('post', analytics_url1, 'body')).to eq identical_cache_key
         expect(cache.key('post', regular_url, 'body')).to eq distinct_cache_key
         expect(cache.key('post', analytics_url2, 'body')).to eq identical_cache_key
+      end
+    end
+
+    context 'with key_pattern set' do
+      before do
+        allow(Billy.config).to receive(:key_pattern) {
+          [:scope, :method, :host]
+        }
+      end
+
+      context 'with default scope' do
+        it 'changes the key pattern according to the one provided' do
+          expect(cache.key('post', base_url, 'body')).to match(/\Apost_example\.com_/)
+        end
+      end
+
+      context 'scoped to something else' do
+        it 'changes the key pattern according to the one provided' do
+          allow(cache).to receive(:scope) { 'some_cache' }
+
+          expect(cache.key('post', base_url, 'body')).to match(/\Asome_cache_post_example\.com_/)
+        end
+      end
+    end
+
+    context 'without key_pattern set' do
+      it 'uses the default' do
+        expect(cache.key('post', base_url, 'body')).to match(/\Apost_example\.com_/)
       end
     end
   end
